@@ -7,7 +7,7 @@ const response=  await fetch(`${API_URL}/planets`)
   //return await response.json()
   // console.log(await response.json());
   const {habitablePlanets}=await response.json()
-  console.log(habitablePlanets);
+
   return habitablePlanets
   
 }
@@ -15,6 +15,11 @@ const response=  await fetch(`${API_URL}/planets`)
 async function httpGetLaunches() {
   // TODO: Once API is ready.
   // Load launches, sort by flight number, and return as JSON.
+  const response=  await fetch(`${API_URL}/launches`);
+  const fetchedLaunches=await response.json()
+   return fetchedLaunches.sort((a,b)=>{
+    return a.flightNumber-b.flightNumber;
+  })
 }
 
 async function httpSubmitLaunch(launch) {
