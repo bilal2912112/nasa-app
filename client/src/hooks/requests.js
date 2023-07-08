@@ -7,8 +7,9 @@ const response=  await fetch(`${API_URL}/planets`)
   //return await response.json()
   // console.log(await response.json());
   const {habitablePlanets}=await response.json()
-
+console.log(habitablePlanets);
   return habitablePlanets
+
   
 }
 
@@ -25,9 +26,32 @@ async function httpGetLaunches() {
 async function httpSubmitLaunch(launch) {
   // TODO: Once API is ready.
   // Submit given launch data to launch system.
+  try {
+   return await fetch(`${API_URL}/launches`,{
+      method:'post',
+      headers:{
+  "Content-Type":"application/json",
+      },
+      body:JSON.stringify(launch)
+    })
+  } catch (error) {
+   return{ ok:false}
+  }
+
 }
 
 async function httpAbortLaunch(id) {
+  try {
+    return await fetch(`${API_URL}/launches/${id}`,{
+      method:'delete'
+    })
+    
+  } catch (error) {
+    console.log(error);
+    return{
+      ok:false
+    }
+  }
   // TODO: Once API is ready.
   // Delete launch with given ID.
 }
