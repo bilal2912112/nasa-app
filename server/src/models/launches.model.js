@@ -1,3 +1,4 @@
+const launchesDatabase = require("./launches.mongo");
 const launches = new Map();
 let latestFlightNumber = 100;
 const launch = {
@@ -10,12 +11,17 @@ const launch = {
   upcoming: true,
   success: true,
 };
-launches.set(launch.flightNumber, launch);
+saveLaunch(launch)
+
+// launches.set(launch.flightNumber, launch);
+// console.log(launches.set(launch.flightNumber, launch));
 function existLaunchWithId(launchId) {
   return launches.has(launchId);
 }
-function getallLaunches() {
-  return Array.from(launches.values());
+async function getallLaunches() {
+
+return await launchesDatabase.find({},{'_id':0,'__v':0})
+
 }
 function addnewLaunch(launch) {
   latestFlightNumber++;
@@ -30,11 +36,21 @@ function addnewLaunch(launch) {
   );
 }
 function abortLaunchById(launchId) {
-  const aborted=launches.get(launchId);
-  aborted.upcoming=false;
-  aborted.success=false;
-  return aborted
-
+  const aborted = launches.get(launchId);
+  aborted.upcoming = false;
+  aborted.success = false;
+  return aborted;
+}
+async function saveLaunch(launch) {
+  try {
+    await launchesDatabase.updateOne(
+      { flightNumber: launch.flightNumber },
+       launch,
+      { upsert: true }
+    );
+  } catch (error) {
+    console.error(`Could not save planet ${error}`);
+  }
 }
 module.exports = {
   getallLaunches,
