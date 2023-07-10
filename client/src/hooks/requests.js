@@ -4,11 +4,12 @@ async function httpGetPlanets() {
   // TODO: Once API is ready.
   // Load planets and return as JSON.
 const response=  await fetch(`${API_URL}/planets`)
-  //return await response.json()
-  // console.log(await response.json());
-  const {habitablePlanets}=await response.json()
-console.log(habitablePlanets);
-  return habitablePlanets
+// console.log(await response.json());
+//   return await response.json()
+
+  const keplerName=await response.json()
+console.log(keplerName);
+  return keplerName
 
   
 }
