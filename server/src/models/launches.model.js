@@ -17,26 +17,27 @@ saveLaunch(launch);
 
 // launches.set(launch.flightNumber, launch);
 // console.log(launches.set(launch.flightNumber, launch));
-function existLaunchWithId(launchId) {
-  return launches.has(launchId);
+async function existLaunchWithId(launchId) {
+  return await launchesDatabase.findOne({
+    flightNumber: launchId,
+  });
 }
 async function getallLaunches() {
   return await launchesDatabase.find({}, { _id: 0, __v: 0 });
 }
 async function scheduleNewLaunch(launch) {
   try {
-    const newFlightNumber=await getLatestFlightNumber()+1
-    const newLaunch=Object.assign(launch,{
-      success:true,
-      upcoming:true,
+    const newFlightNumber = (await getLatestFlightNumber()) + 1;
+    const newLaunch = Object.assign(launch, {
+      success: true,
+      upcoming: true,
       customer: ["ZTM", "NASA"],
-      flightNumber:newFlightNumber
-    })
-    await saveLaunch(newLaunch)
+      flightNumber: newFlightNumber,
+    });
+    await saveLaunch(newLaunch);
   } catch (error) {
     console.log(`thier is error ${error}`);
   }
- 
 }
 // function addnewLaunch(launch) {
 //   latestFlightNumber++;
@@ -51,25 +52,29 @@ async function scheduleNewLaunch(launch) {
 //   );
 // }
 async function getLatestFlightNumber() {
-  try {  const latestLaunch = await launchesDatabase.findOne().sort('-flightNumber');
-  
-  if (!latestLaunch) {
-    return Default_FlightNumber;
-  } else {
-    return latestLaunch.flightNumber;
-  }
-    
+  try {
+    const latestLaunch = await launchesDatabase.findOne().sort("-flightNumber");
+
+    if (!latestLaunch) {
+      return Default_FlightNumber;
+    } else {
+      return latestLaunch.flightNumber;
+    }
   } catch (error) {
     console.log(`error in getlatest ${error}`);
   }
-
 }
 
-function abortLaunchById(launchId) {
-  const aborted = launches.get(launchId);
-  aborted.upcoming = false;
-  aborted.success = false;
-  return aborted;
+async function abortLaunchById(launchid) {
+  const aborted = await launchesDatabase.updateOne(
+    { flightNumber: launchid },
+    {
+      upcoming: false,
+      success: false,
+    }
+  );
+
+  return aborted.modifiedCount === 1;
 }
 
 async function saveLaunch(launch) {
@@ -80,7 +85,7 @@ async function saveLaunch(launch) {
     if (!planet) {
       throw new Error("No matching Planetzl");
     }
-    await launchesDatabase.updateOne(
+    await launchesDatabase.findOneAndUpdate(
       { flightNumber: launch.flightNumber },
       launch,
       { upsert: true }
