@@ -6,39 +6,31 @@
 // async function startServer() {
 //     await loadPlanetData()
 //     server.listen(PORT,()=>{
-      
+
 //            console.log(`listning on Port ${PORT}`);
 //     })
-      
+
 // }
 
 // startServer()
-const PORT=process.env.PORT||8000
-const DB_URL="mongodb+srv://bilaliqbal2912112:abcd1234@cluster0.1mw29ih.mongodb.net/"
-const mongoose=require("mongoose")
-const cors= require('cors');
+const PORT = process.env.PORT || 8000;
+
+const cors = require("cors");
 const express = require("express");
-const { loadPlanetData } = require('./models/planet.model.js')
-const app =require('./app.js')
+const { loadPlanetData } = require("./models/planet.model.js");
+const {loadLaunchData}= require("./models/launches.model.js")
+const app = require("./app.js");
+const { mongoConnect } = require("./services/mongo.js");
 
 app.use(express.json());
-mongoose.connection.once('open',()=>{
-    console.log("Mongodb connection ready");
-})
-mongoose.connection.on('error',(err)=>{
-    console.error(err)
-})
- async function startServer() {
-    await mongoose.connect(DB_URL,{
-        useNewUrlParser:true,
-       
-        useUniFiedTopology:true,
-    })
-        await loadPlanetData()
-        app.listen(PORT,()=>{
-            console.log(`our application is running at port ${PORT}`)
-        })
-          
-    }
-    
-    startServer()
+
+async function startServer() {
+  await mongoConnect();
+  await loadPlanetData();
+  await loadLaunchData();
+  app.listen(PORT, () => {
+    console.log(`our application is running at port ${PORT}`);
+  });
+}
+
+startServer();
