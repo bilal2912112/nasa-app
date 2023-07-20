@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const DB_URL="mongodb+srv://bilaliqbal2912112:abcd1234@cluster0.1mw29ih.mongodb.net/"
+const DB_URL=process.env.MONGO_URL
 
 mongoose.connection.once('open',()=>{
     console.log("Mongodb connection ready");
