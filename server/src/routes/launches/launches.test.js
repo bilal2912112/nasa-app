@@ -6,7 +6,7 @@ const { loadPlanetData } = require("../../models/planet.model");
 describe("Launches API", () => {
   beforeAll(async ()=>{
     await mongoConnect()
-    await loadPlanetData()
+   // await loadPlanetData()
   })
   afterAll(async()=>{
     await mongoDisconnect() 
@@ -21,40 +21,42 @@ describe("Launches API", () => {
     });
   });
   describe("Test Post /Launches", () => {
-    const compeleteLaunchDate = {
-      mission: "USS Enterprise",
-      rocket: "NCC 1701-D",
-      target: "Kepler-186",
-      launchDate: "January 4,2028",
+    const completeLaunchData = {
+      mission: 'USS Enterprise',
+      rocket: 'NCC 1701-D',
+      target: 'Kepler-62 f',
+      launchDate: 'January 4, 2028',
     };
-    const compeleteLaunchWithOutDate = {
-      mission: "USS Enterprise",
-      rocket: "NCC 1701-D",
-      target: "Kepler-186",
+  
+    const launchDataWithoutDate = {
+      mission: 'USS Enterprise',
+      rocket: 'NCC 1701-D',
+      target: 'Kepler-62 f',
     };
+  
     const launchDataWithInvalidDate = {
-      mission: "USS Enterprise",
-      rocket: "NCC 1701-D",
-      target: "Kepler-186",
-      launchDate: "Jaan",
+      mission: 'USS Enterprise',
+      rocket: 'NCC 1701-D',
+      target: 'Kepler-62 f',
+      launchDate: 'zoot',
     };
 
     test("should response with 200", async () => {
       const response = await request(app)
         .post("/v1/launches")
-        .send(compeleteLaunchDate)
+        .send(completeLaunchData)
         .expect(201)
         .expect("Content-Type", /json/);
-      const requestDate = new Date(compeleteLaunchDate.launchDate).valueOf();
+      const requestDate = new Date(completeLaunchData.launchDate).valueOf();
       const responseDate = new Date(response.body.launchDate).valueOf();
       expect(requestDate).toBe(responseDate);
-      expect(response.body).toMatchObject(compeleteLaunchWithOutDate);
+      expect(response.body).toMatchObject(launchDataWithoutDate);
     });
 
     test("should catch missing required properties", async () => {
       const response = await request(app)
         .post("/v1/launches")
-        .send(compeleteLaunchWithOutDate)
+        .send(launchDataWithoutDate)
 
         .expect("Content-Type", /json/)
         .expect(400);
